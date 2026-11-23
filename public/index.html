@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digonto.ai — বাংলাদেশি AI অ্যাসিস্ট্যান্ট</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<div class="app-shell">
+    <header class="topbar">
+        <div class="brand-wrap">
+            <div class="brand-badge">
+                <span class="pulse-dot"></span>
+            </div>
+            <div>
+                <h1 class="brand-title">Digonto.ai</h1>
+                <p class="brand-subtitle">বাংলাদেশি AI • সবসময় পাশে</p>
+            </div>
+        </div>
+
+        <button id="clearBtn" class="btn-ghost" type="button" title="নতুন চ্যাট শুরু করুন">
+            নতুন চ্যাট
+        </button>
+    </header>
+
+    <main id="chatBox" class="chat-stream">
+        <div class="welcome-card" id="welcomeCard">
+            <span class="welcome-tag">স্বাগতম Digonto.ai-তে</span>
+            <h2>কী নিয়ে কথা বলতে চান আজ?</h2>
+            <div class="starter-grid">
+                <button class="starter-chip" type="button" data-prompt="আজকের দিনটা সুন্দরভাবে সাজানোর ৩টি সহজ টিপস দাও।">
+                    দিনের রুটিন টিপস
+                </button>
+                <button class="starter-chip" type="button" data-prompt="Explain web development simply in English and Bangla.">
+                    ওয়েব ডেভেলপমেন্ট সহজ ব্যাখ্যা
+                </button>
+                <button class="starter-chip" type="button" data-prompt="একটি ছোট ও অনুপ্রেরণাদায়ক গল্প শোনাও।">
+                    ছোট অনুপ্রেরণার গল্প
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="composer-wrap">
+        <div class="composer-box">
+            <textarea
+                id="userInput"
+                rows="1"
+                placeholder="Digonto.ai-কে লিখুন... (Enter = পাঠান, Shift + Enter = নতুন লাইন)"
+            ></textarea>
+            <button id="sendBtn" class="btn-send" type="button" aria-label="মেসেজ পাঠান">
+                পাঠান
+            </button>
+        </div>
+        <div class="composer-hint">Digonto.ai ভুল তথ্য দিতে পারে; গুরুত্বপূর্ণ বিষয় যাচাই করে নেবেন।</div>
+    </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
