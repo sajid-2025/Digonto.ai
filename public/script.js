@@ -9,14 +9,90 @@ const SYSTEM_PROMPT = {
     role: "system",
     content:
         "You are Digonto.ai, a helpful, warm, clear, and intelligent Bangladeshi AI assistant. " +
-        "By default, reply in natural, clear Bengali (Bangla). However, if the user asks in English, requests an English response, or when English technical terms/explanations are needed for clarity, use English smoothly or mix naturally as helpful."
+        "By default, reply in natural, clear Bengali (Bangla). However, if the user asks in English, requests an English response, or when English technical terms/explanations are needed for clarity, use English smoothly or mix naturally as helpful. " +
+        "Format responses cleanly using short paragraphs, bullet points, and bold text (**text**) where helpful."
 };
 
 let chatHistory = [SYSTEM_PROMPT];
 
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function formatInline(text) {
+    let formatted = escapeHtml(text);
+
+    // Inline code: `code`
+    formatted = formatted.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+
+    // Bold: **text**
+    formatted = formatted.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
+
+    // Italic: *text* (single asterisk not adjacent to another asterisk)
+    formatted = formatted.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, "<em>$1</em>");
+
+    return formatted;
+}
+
+function renderMarkdown(rawText) {
+    const normalized = rawText.replace(/\r\n/g, "\n").trim();
+    if (!normalized) return "";
+
+    // Extract fenced code blocks (```...```) first
+    const codeBlocks = [];
+    const withPlaceholders = normalized.replace(/```([\w-]*)\n?([\s\S]*?)```/g, (_, _lang, code) => {
+        const index = codeBlocks.length;
+        codeBlocks.push(`<pre><code>${escapeHtml(code.trimEnd())}</code></pre>`);
+        return `\n@@CODEBLOCK_${index}@@\n`;
+    });
+
+    const blocks = withPlaceholders.split(/\n{2,}/);
+
+    const htmlParts = blocks.map((block) => {
+        const trimmed = block.trim();
+        if (!trimmed) return "";
+
+        const codeMatch = trimmed.match(/^@@CODEBLOCK_(\d+)@@$/);
+        if (codeMatch) {
+            return codeBlocks[Number(codeMatch[1])] || "";
+        }
+
+        const lines = trimmed.split("\n");
+
+        // Bullet list block (- or * at start of lines)
+        const isBulletList = lines.every((line) => /^\s*[-*]\s+/.test(line));
+        if (isBulletList) {
+            const items = lines
+                .map((line) => `<li>${formatInline(line.replace(/^\s*[-*]\s+/, ""))}</li>`)
+                .join("");
+            return `<ul>${items}</ul>`;
+        }
+
+        // Numbered list block (1. 2. ...)
+        const isNumberedList = lines.every((line) => /^\s*\d+\.\s+/.test(line));
+        if (isNumberedList) {
+            const items = lines
+                .map((line) => `<li>${formatInline(line.replace(/^\s*\d+\.\s+/, ""))}</li>`)
+                .join("");
+            return `<ol>${items}</ol>`;
+        }
+
+        // Regular paragraph with line breaks
+        const paragraphLines = lines.map((line) => formatInline(line)).join("<br>");
+        return `<p>${paragraphLines}</p>`;
+    });
+
+    return htmlParts.join("");
+}
+
 function autoResizeTextarea() {
     userInput.style.height = "auto";
-    userInput.style.height = `${Math.min(userInput.scrollHeight, 140)}px`;
+    userInput.style.height = `${Math.min(userInput.scrollHeight, 130)}px`;
 }
 
 function removeWelcomeCard() {
@@ -29,11 +105,21 @@ function appendMessage(text, type = "ai", isError = false) {
 
     const div = document.createElement("div");
     div.className = `msg ${type === "user" ? "msg-user" : "msg-ai"} ${isError ? "msg-error" : ""}`;
-    div.textContent = text;
+
+    if (type === "user") {
+        div.textContent = text;
+    } else {
+        div.innerHTML = renderMarkdown(text);
+    }
 
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return div;
+}
+
+function setAiMessageContent(div, text, isError = false) {
+    div.classList.toggle("msg-error", isError);
+    div.innerHTML = renderMarkdown(text);
 }
 
 function resetChat() {
@@ -92,16 +178,14 @@ async function sendMessage(customText = null) {
 
         if (response.ok && data.choices?.[0]?.message?.content) {
             const reply = data.choices[0].message.content.trim();
-            loadingBubble.textContent = reply;
+            setAiMessageContent(loadingBubble, reply, false);
             chatHistory.push({ role: "assistant", content: reply });
         } else {
-            loadingBubble.textContent = `দুঃখিত, উত্তর আনা যায়নি: ${data.error || "অজানা সমস্যা"}`;
-            loadingBubble.classList.add("msg-error");
+            setAiMessageContent(loadingBubble, `দুঃখিত, উত্তর আনা যায়নি: ${data.error || "অজানা সমস্যা"}`, true);
             chatHistory.pop();
         }
     } catch (err) {
-        loadingBubble.textContent = "সার্ভারের সাথে সংযোগ করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।";
-        loadingBubble.classList.add("msg-error");
+        setAiMessageContent(loadingBubble, "সার্ভারের সাথে সংযোগ করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।", true);
         chatHistory.pop();
     } finally {
         sendBtn.disabled = false;
