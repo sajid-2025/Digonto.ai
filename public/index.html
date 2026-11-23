@@ -2,8 +2,11 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Digonto.ai — বাংলাদেশি AI অ্যাসিস্ট্যান্ট</title>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap)" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,7 +22,7 @@
             </div>
             <div>
                 <h1 class="brand-title">Digonto.ai</h1>
-                <p class="brand-subtitle">বাংলাদেশি AI • সবসময় পাশে</p>
+                <p class="brand-subtitle">বাংলাদেশি AI • স্মার্ট অ্যাসিস্ট্যান্ট</p>
             </div>
         </div>
 
@@ -32,6 +35,8 @@
         <div class="welcome-card" id="welcomeCard">
             <span class="welcome-tag">স্বাগতম Digonto.ai-তে</span>
             <h2>কী নিয়ে কথা বলতে চান আজ?</h2>
+            <p>আমি সাধারণত বাংলায় উত্তর দিই, আর প্রয়োজনে ইংরেজিতেও সাহায্য করি।</p>
+
             <div class="starter-grid">
                 <button class="starter-chip" type="button" data-prompt="আজকের দিনটা সুন্দরভাবে সাজানোর ৩টি সহজ টিপস দাও।">
                     দিনের রুটিন টিপস
@@ -51,13 +56,13 @@
             <textarea
                 id="userInput"
                 rows="1"
-                placeholder="Digonto.ai-কে লিখুন... (Enter = পাঠান, Shift + Enter = নতুন লাইন)"
+                placeholder="Digonto.ai-কে লিখুন..."
             ></textarea>
             <button id="sendBtn" class="btn-send" type="button" aria-label="মেসেজ পাঠান">
                 পাঠান
             </button>
         </div>
-        <div class="composer-hint">Digonto.ai ভুল তথ্য দিতে পারে; গুরুত্বপূর্ণ বিষয় যাচাই করে নেবেন।</div>
+        <div class="composer-hint">Enter চাপলে পাঠাবে • Shift + Enter নতুন লাইন</div>
     </footer>
 </div>
 
