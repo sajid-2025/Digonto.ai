@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Messages array is required" });
     }
 
-    const selectedModel = model || "meta-llama/llama-3.2-3b-instruct:free";
+    const selectedModel = model || "openrouter/free";
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
